@@ -7,5 +7,15 @@
     </head>
     <body>
         <h1>Hello</h1>
+        <% if (loggedIn) { %>
+            <p>Hello <%= user %>!</p>
+            <nav class="links">
+                <a href="/logout">Logout</a>
+            </nav>
+        <% } %>
+        <nav class="links">
+            <a href="/signup">Sign up</a><br>
+            <a href="/login">Login</a>
+        </nav>
     </body>
 </html>
