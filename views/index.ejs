@@ -6,16 +6,16 @@
         <title>Homepage</title>
     </head>
     <body>
-        <h1>Hello</h1>
+        <h1>File uploader</h1>
         <% if (loggedIn) { %>
-            <p>Hello <%= user %>!</p>
+            <p>Hello <%= user %>! <a href="/logout">Logout</a></p><br>
+            <button><a href="/uploadFile">Upload a file</a></button>
+        <% } else { %>
+            <h2>Please log in or create an account</h2>
             <nav class="links">
-                <a href="/logout">Logout</a>
+                <a href="/signup">Sign up</a><br>
+                <a href="/login">Login</a>
             </nav>
         <% } %>
-        <nav class="links">
-            <a href="/signup">Sign up</a><br>
-            <a href="/login">Login</a>
-        </nav>
     </body>
 </html>

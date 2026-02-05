@@ -18,4 +18,6 @@ router.post('/login', passport.authenticate('local', {
     failureMessage: true
 }));
 router.get('/logout', controller.logoutGet);
+router.get('/uploadFile', controller.uploadFileGet);
+
 module.exports = router;
