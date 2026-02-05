@@ -1,8 +1,6 @@
 const { validationResult, body } = require("express-validator");
 const passport = require("passport");
 const bcrypt = require("bcryptjs");
-const multer = require('multer');
-const upload = multer({ dest: 'uploads/'});
 const prisma = require("../lib/prisma");
 require("dotenv/config");
 
@@ -96,7 +94,8 @@ async function uploadFileGet(req, res) {
 }
 
 async function uploadFilePost(req, res) {
-    
+    console.log('File uploaded');
+    res.redirect('/');
 }
 
 module.exports = {
@@ -106,6 +105,7 @@ module.exports = {
     loginPageGet,
     logoutGet,
     uploadFileGet,
+    uploadFilePost,
     validateSignUp,
     validateConfirmPassword,
 }
