@@ -8,59 +8,54 @@ datasource db {
 }
 
 model Session {
-  id        String    @id
-  sid       String    @unique
+  id        String   @id
+  sid       String   @unique
   data      String
   expiresAt DateTime
 }
 
 model User {
   id       Int      @id @default(autoincrement())
-  email    String   @unique
   username String   @unique
   password String
   created  DateTime @default(now())
-  folders  Folder[]
   files    File[]
+  folders  Folder[]
 }
 
 model File {
-  id Int @id @default(autoincrement())
-  name String
-  size  Int
-  created DateTime @default(now())
-
-  owner User @relation(fields: [ownerId], references: [id])
-  ownerId Int
-
-  folder Folder @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  id       Int      @id @default(autoincrement())
+  name     String
+  size     Int
+  created  DateTime @default(now())
+  ownerId  Int
   folderId Int
+  url      String
+  folder   Folder   @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  owner    User     @relation(fields: [ownerId], references: [id])
 
-  url String
   @@unique([name, folderId, ownerId])
 }
 
 model Folder {
-  id Int @id @default(autoincrement())
-  name String
-  owner User @relation(fields: [ownerId], references: [id])
-  ownerId Int
-
-  parentFolder Folder? @relation("Folder Hierarchy", fields: [parentId], references: [id], onDelete: Cascade)
-  parentId Int?
-  children Folder[] @relation("Folder Hierarchy")
-
-  files File[]
-  shareLinks ShareLink[]
+  id           Int         @id @default(autoincrement())
+  name         String
+  ownerId      Int
+  parentId     Int?
+  created      DateTime    @default(now()) @db.Timestamp(6)
+  files        File[]
+  owner        User        @relation(fields: [ownerId], references: [id])
+  parentFolder Folder?     @relation("Folder Hierarchy", fields: [parentId], references: [id], onDelete: Cascade)
+  children     Folder[]    @relation("Folder Hierarchy")
+  shareLinks   ShareLink[]
 
   @@unique([ownerId, name])
 }
 
 model ShareLink {
-  id String @id @default(uuid())
-  folder Folder @relation(fields: [folderId], references: [id])
+  id       String   @id @default(uuid())
   folderId Int
-
-  created DateTime @default(now())
-  expires DateTime
+  created  DateTime @default(now())
+  expires  DateTime
+  folder   Folder   @relation(fields: [folderId], references: [id])
 }
