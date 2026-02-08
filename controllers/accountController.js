@@ -1,5 +1,6 @@
 const { validationResult, body } = require("express-validator");
 const db = require("../db/queries");
+const prisma = require("../lib/prisma");
 require("dotenv/config");
 
 const validateSignUp = [
@@ -41,7 +42,29 @@ async function signupPagePost(req, res, next) {
         });
     }
 
-    await db.createUser(req.body.username, req.body.password);
+    try {
+        await prisma.$transaction(async (tx) => {
+            // tx is the transaction client
+            const user = await db.createUser(req.body.username, req.body.password, tx);
+            
+            await tx.folder.create({
+                data: {
+                    name: "root",
+                    ownerId: user.id,
+                    parentId: null
+                }
+            });
+        });
+    
+        res.redirect('/');
+    } catch (err) {
+        console.log(err);
+
+        return res.status(500).render('signup', {
+            errors: [{ msg: "Account creation failed. Please try again." }],
+            old: req.body
+        });
+    }
 }
 
 async function loginPageGet(req, res) {

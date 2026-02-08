@@ -3,18 +3,14 @@ const prisma = require("../lib/prisma");
 
 // user functions
 async function createUser(username, password) {
-    try {
-        const hashedPassword = await bcrypt.hash(password, 10);
-        await prisma.user.create({
-            data: {
-                username: username,
-                password: hashedPassword
-            }
-        });
-    } catch (error) {
-        console.log(error);
-        next(error)
-    }
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = prisma.user.create({
+        data: {
+            username: username,
+            password: hashedPassword
+        }
+    });
+    return user;
 }
 
 async function getUserByUsername(username) {
@@ -155,10 +151,10 @@ async function deleteFile(fileId) {
 
 // share link function
 async function getSharedLink(id) {
-    const link = await prisma.sharedLink.findUnique({
+    const link = await prisma.shareLink.findUnique({
         where: { 
             id,
-            expiresAt: { gt: new Date() }
+            expires: new Date() 
          }      
     });
 
