@@ -19,13 +19,6 @@ const validateConfirmPassword = body('confirmPass')
         return true;
     });
 
-async function homepageGet(req, res) {
-    res.render('index', {
-        loggedIn: req.isAuthenticated(),
-        user: req.user?.username ?? null    
-    });
-}
-
 async function signupPageGet(req, res) {
     res.render('signup', {
         errors: [],
@@ -90,7 +83,6 @@ async function logoutGet(req, res, next) {
 }
 
 module.exports = {
-    homepageGet,
     signupPageGet,
     signupPagePost,
     loginPageGet,

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title><%= f.name %></title>
+    </head>
+    <body>
+        <h1><strong><%= f.name %></strong></h1>
+        <div class="folder">
+            <h1>📂 <%= f.name %></h1>
+
+            <% if (f.parentFolder) { %>
+                <a href="/folder/<%= f.parentFolder.id %>">← Back</a>
+            <% } else { %>
+                <a href="/">← Home</a>
+            <% } %>
+
+            <hr />
+
+            <!-- non parent folders (subfolders) -->
+             <h2>Folders</h2>
+            <% if (f.children.length === 0) { %>
+                <p>No folders found</p>
+            <% } else { %>
+                <% f.children.forEach(child => { %>
+                    <div class="subfolder">
+                        📁 <a href="/folder/<%= child.id %>"><%= child.name %></a>
+                    </div>
+                <% }) %>
+            <% } %>
+
+            <hr />
+
+            <!-- files -->
+            <h2>Files</h2>
+            <% if (f.files.length === 0) { %>
+                <p>No files found</p>
+            <% } else { %>
+                <% f.files.forEach(file => { %>
+                    <div class="file">
+                        <%= file.name %>
+                        (<%= Math.round(file.size/1024) %> KB)
+                        <a href="<%= file.url %>" target="_blank">Download</a>
+                    </div>
+                <% }) %>
+            <% } %>
+        </div>
+    </body>
+</html>

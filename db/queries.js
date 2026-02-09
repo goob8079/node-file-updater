@@ -2,9 +2,9 @@ const bcrypt = require("bcryptjs");
 const prisma = require("../lib/prisma");
 
 // user functions
-async function createUser(username, password) {
+async function createUser(username, password, prismaClient = prisma) {
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = prisma.user.create({
+    const user = prismaClient.user.create({
         data: {
             username: username,
             password: hashedPassword
@@ -79,17 +79,30 @@ async function getStorageId(userId) {
 async function getFolder(userId, folderId) {
     const folder = await prisma.folder.findFirst({
         where: {
-            id: folderId,
+            id: Number(folderId),
             ownerId: userId
         },
         include: {
             parentFolder: true,
-            children: { orderBy: { createdAt: 'asc' } },
-            files: { orderBy: { createdAt: 'asc' } }
+            children: { orderBy: { created: 'asc' } },
+            files: { orderBy: { created: 'asc' } }
         }       
     });
 
     return folder;
+}
+
+async function getAllFolders(userId) {
+    const folders = await prisma.folder.findMany({
+        where: {
+            ownerId: userId,
+            parentId: null
+        },
+        orderBy: {
+            created: 'asc'
+        } 
+    });
+    return folders;
 }
 
 async function createSharedLink(folderId, expiresAt) {
@@ -170,6 +183,7 @@ module.exports = {
     renameFolder,
     getStorageId,
     getFolder,
+    getAllFolders,
     createSharedLink,
     createFile,
     getFileById,

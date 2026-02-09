@@ -1,13 +1,15 @@
 const { Router } = require("express");
 const passport = require("passport");
+const indexController = require('../controllers/indexController');
 const accountController = require('../controllers/accountController');
-const fileController = require("../controllers/fileController");
+const fileController = require('../controllers/fileController');
+const folderController = require('../controllers/folderController');
 const upload = require("../config/multer");
 
 const router = Router();
 
 // account logic
-router.get('/', accountController.homepageGet);
+router.get('/', indexController.homepageGet);
 router.get('/signup', accountController.signupPageGet);
 router.post('/signup',
     accountController.validateSignUp,
@@ -22,8 +24,11 @@ router.post('/login', passport.authenticate('local', {
 }));
 router.get('/logout', accountController.logoutGet);
 
-// file uploading logic
+// file logic
 router.get('/uploadFile', fileController.uploadFileGet);
 router.post('/uploadFile', upload.single('uploaded-file'), fileController.uploadFilePost);
+
+// folder logic
+router.get('/folder/:id', folderController.viewFolderGet);
 
 module.exports = router;

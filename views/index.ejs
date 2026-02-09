@@ -10,6 +10,15 @@
         <% if (loggedIn) { %>
             <p>Hello <%= user %>! <a href="/logout">Logout</a></p><br>
             <button><a href="/uploadFile">Upload a file</a></button>
+            <div class="folders-container">
+                <% if (folders.length === 0) { %>
+                    <p>No folders found</p>
+                <% } else { %>
+                    <% folders.forEach(f => { %>
+                        <button><a href="/folder/<%= f.id %>" style="text-decoration: none; color: black;">📁 <%= f.name %></a></button>
+                    <% }) %>
+                <% } %>
+            </div>
         <% } else { %>
             <h2>Please log in or create an account</h2>
             <nav class="links">
