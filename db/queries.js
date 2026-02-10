@@ -25,7 +25,7 @@ async function getUserByUsername(username) {
 async function getUserById(id) {
     const user = await prisma.user.findUnique({
         where: {
-            id: id
+            id: Number(id)
         }
     });
     return user;
@@ -51,10 +51,11 @@ async function deleteFolder(folderId) {
     });
 }
 
-async function renameFolder(folderId, newName) {
+async function renameFolder(folderId, userId, newName) {
     const folder = await prisma.folder.update({
         where: {
-            id: folderId
+            id: Number(folderId),
+            ownerId: userId
         },
         data: {
             name: newName

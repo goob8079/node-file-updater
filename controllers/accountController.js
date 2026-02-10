@@ -26,7 +26,7 @@ async function signupPageGet(req, res) {
     });
 }
 
-async function signupPagePost(req, res, next) {
+async function signupPagePost(req, res) {
     const errs = validationResult(req);
     if (!errs.isEmpty()) {
         return res.status(400).render('signup', {

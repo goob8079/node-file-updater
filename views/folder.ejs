@@ -4,10 +4,42 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title><%= f.name %></title>
+        <link rel="stylesheet" href="../css/folder.css">
+        <script src="../scripts/popup.js"></script>
     </head>
     <body>
         <h1><strong><%= f.name %></strong></h1>
-        <div class="folder">
+        <nav class="options">
+            <button class="rename-btn" onclick="openRenamePopup(this)">Rename</button>
+            <div class="rename-popup">
+                <button class="close-popup" onclick="closeRenamePopup(this)">X</button>
+                <form action="/folder/<%= f.id %>/rename" method="POST">
+                    <label for="renameFolder">New folder name:</label>
+                    <input type="text" id="renameFolder" name="renameFolder" value="<%= old?.['renameFolder'] || '' %>">
+                    <div class="error">
+                        <% if (errors) { %>
+                            <ul>
+                                <% errors.forEach(e => { %>
+                                    <li style="color: red;"><%= e.msg %></li>
+                                <% }) %>
+                            </ul>
+                        <% } %>
+                    </div>
+                    <button type="submit">Rename</button>
+                </form>
+            </div>
+
+            <button class="delete-btn" onclick="openDeletePopup(this)">Delete</button>
+            <div class="delete-popup">
+                <button class="close-popup" onclick="closeDeletePopup(this)">X</button>
+                <form action="/folder/<%= f.id %>/delete" method="POST">
+                    <p>Are you sure you want to delete this folder and all folders/files within it?</p>
+                    <button name="yesDelete" type="submit">Yes</button>
+                    <button name="noDelete" type="submit">No</button>
+                </form>
+            </div>
+        </nav>
+        <div class="folder-container">
             <h1>📂 <%= f.name %></h1>
 
             <% if (f.parentFolder) { %>
@@ -39,7 +71,7 @@
             <% } else { %>
                 <% f.files.forEach(file => { %>
                     <div class="file">
-                        <%= file.name %>
+                        📄 <%= file.name %>
                         (<%= Math.round(file.size/1024) %> KB)
                         <a href="<%= file.url %>" target="_blank">Download</a>
                     </div>

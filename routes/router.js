@@ -30,5 +30,9 @@ router.post('/uploadFile', upload.single('uploaded-file'), fileController.upload
 
 // folder logic
 router.get('/folder/:id', folderController.viewFolderGet);
+router.post('/folder/:id/rename',
+    folderController.validateFolderName,
+    folderController.renameFolderPost
+);
 
 module.exports = router;

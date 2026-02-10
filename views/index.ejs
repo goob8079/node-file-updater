@@ -9,8 +9,8 @@
         <h1>File uploader</h1>
         <% if (loggedIn) { %>
             <p>Hello <%= user %>! <a href="/logout">Logout</a></p><br>
-            <button><a href="/uploadFile">Upload a file</a></button>
             <div class="folders-container">
+                <h3>Folders</h3>
                 <% if (folders.length === 0) { %>
                     <p>No folders found</p>
                 <% } else { %>
