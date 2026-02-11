@@ -1,18 +1,24 @@
 const { validationResult, body } = require("express-validator");
 const db = require("../db/queries");
 
-const validateFolderName = body('renameFolder').trim()
+const validateFolderName = body('newFolderName').trim()
+    .matches(/^[a-zA-Z0-9_]+$/).withMessage('Folder must contain only letters and numbers!')
+    .isLength({ min: 1, max: 45 }).withMessage('Folder must be between 1 and 45 characters long!');
+
+const validateFolderRename = body('renameFolder').trim()
     .matches(/^[a-zA-Z0-9_]+$/).withMessage('Folder must contain only letters and numbers!')
     .isLength({ min: 1, max: 45 }).withMessage('Folder must be between 1 and 45 characters long!');
 
 async function viewFolderGet(req, res) {
     const loggedIn = req.isAuthenticated();
+    const slug = req.params.slug
 
     if (!loggedIn) {
         res.send('<h1>You are not authorized to view this page</h1><br><a href="/">Back to home</a>')
     }
 
-    const folderId = req.params.id;
+    // to retrieve the id before the name (or underscores)
+    const folderId = slug.split('_')[0];
     const userId = req.user.id;
 
     const folder = await db.getFolder(userId, folderId);
@@ -20,37 +26,86 @@ async function viewFolderGet(req, res) {
         return res.status(404).send('Folder not found!');
     }
 
+    // data from either creating or renaming a file (meant for errors and popup management)
+    const formData = req.session.formData || {};
+    // clear session after reading
+    req.session.formData = null;
+
     res.render('folder', {
         f: folder,
-        errors: [],
-        old: ''
+        formErrors: formData.formErrors || [],
+        formOld: formData.formOld || '',
+        activePopup: formData.activePopup || null
     });
+}
+
+async function createFolderPost(req, res) {
+    const errs = validationResult(req);
+    const slug = req.params.slug;
+    const folderId = slug.split('_')[0];
+    const userId = req.user.id;
+    const folderName = req.body.newFolderName;
+
+    // save formData into session to maintain errors and popup status (activePopup)
+    if (!errs.isEmpty()) {
+        req.session.formData = {
+            activePopup: 'create',
+            formErrors: errs.array(),
+            formOld: req.body
+        };
+
+        // keeps session saved so the popup will remain on screen with any errors
+        return req.session.save(() => {
+            res.redirect(`/folder/${slug}`);
+        });
+    }
+
+    await db.createFolder(userId, folderId, folderName);
+    res.redirect(`/folder/${slug}`);
 }
 
 async function renameFolderPost(req, res) {
     const errs = validationResult(req);
-    const folderId = req.params.id;
+    const slug = req.params.slug;
+    const folderId = slug.split('_')[0];
     const userId = req.user.id;
 
     if (!errs.isEmpty()) {
-        const folder = await db.getFolder(userId, folderId);
-        return res.status(400).render('folder', {
-            f: folder,
-            errors: errs.array(),
-            old: req.body.renameFolder
+        req.session.formData = {
+            activePopup: 'create',
+            formErrors: errs.array(),
+            formOld: req.body
+        };
+
+        // keeps session saved so the popup will remain on screen with any errors
+        return req.session.save(() => {
+            res.redirect(`/folder/${slug}`);
         });
     }
 
     await db.renameFolder(folderId, userId, req.body.renameFolder);
-    res.redirect(`/folder/${folderId}`);
+    res.redirect(`/folder/${slug}`);
 }
 
 async function deleteFolderPost(req, res) {
+    const slug = req.params.slug;
+    const folderId = slug.split('_')[0];
+    const userId = req.user.id;
+ 
+    if (req.body.noDelete) {
+        return res.redirect(`/folder/${slug}`);
+    }
 
+    // if yesDelete is pressed
+    await db.deleteFolder(folderId, userId);
+    res.redirect('/');
 }
 
 module.exports = {
     viewFolderGet,
+    createFolderPost,
     renameFolderPost,
+    deleteFolderPost,
     validateFolderName,
+    validateFolderRename,
 }

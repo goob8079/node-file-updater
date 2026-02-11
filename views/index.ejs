@@ -15,7 +15,7 @@
                     <p>No folders found</p>
                 <% } else { %>
                     <% folders.forEach(f => { %>
-                        <button><a href="/folder/<%= f.id %>" style="text-decoration: none; color: black;">📁 <%= f.name %></a></button>
+                        <button><a href="/folder/<%= f.id %>_<%= f.name.toLowerCase().replace(/\s+/g, '_') %>" style="text-decoration: none; color: black;">📁 <%= f.name %></a></button>
                     <% }) %>
                 <% } %>
             </div>

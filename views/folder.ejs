@@ -11,15 +11,15 @@
         <h1><strong><%= f.name %></strong></h1>
         <nav class="options">
             <button class="rename-btn" onclick="openRenamePopup(this)">Rename</button>
-            <div class="rename-popup">
+            <div class="rename-popup <%= activePopup === 'rename' ? 'active': '' %>"> <!-- to keep popup open if set to true -->
                 <button class="close-popup" onclick="closeRenamePopup(this)">X</button>
                 <form action="/folder/<%= f.id %>/rename" method="POST">
                     <label for="renameFolder">New folder name:</label>
-                    <input type="text" id="renameFolder" name="renameFolder" value="<%= old?.['renameFolder'] || '' %>">
+                    <input type="text" id="renameFolder" name="renameFolder" value="<%= formOld?.['renameFolder'] || '' %>" required>
                     <div class="error">
-                        <% if (errors) { %>
+                        <% if (activePopup === 'rename' && formErrors.length) { %>
                             <ul>
-                                <% errors.forEach(e => { %>
+                                <% formErrors.forEach(e => { %>
                                     <li style="color: red;"><%= e.msg %></li>
                                 <% }) %>
                             </ul>
@@ -51,13 +51,31 @@
             <hr />
 
             <!-- non parent folders (subfolders) -->
-             <h2>Folders</h2>
+            <h2>Folders</h2>
+            <button class="create-folder" onclick="openNewFolderPopup(this)">Create Folder</button>
+            <div class="new-folder-popup <%= activePopup === 'create' ? 'active' : '' %>"> <!-- to keep popup open if set to true -->
+                <button class="close-popup" onclick="closeNewFolderPopup(this)">X</button>
+                <form action="/folder/<%= f.id %>_<%= f.name.toLowerCase().replace(/\s+/g, '_') %>/create" method="POST">
+                    <label for="newFolderName">Enter a name for the folder:</label>
+                    <input type="text" id="newFolderName" name="newFolderName" value="<%= formOld?.['newFolderName'] || '' %>" required>
+                    <div class="error">
+                        <% if (activePopup === 'create' && formErrors.length) { %>
+                            <ul>
+                                <% formErrors.forEach(e => { %>
+                                    <li style="color: red;"><%= e.msg %></li>
+                                <% }) %>
+                            </ul>
+                        <% } %>
+                    </div>
+                    <button type="submit">Submit</button>
+                </form>
+            </div>
             <% if (f.children.length === 0) { %>
                 <p>No folders found</p>
             <% } else { %>
                 <% f.children.forEach(child => { %>
                     <div class="subfolder">
-                        📁 <a href="/folder/<%= child.id %>"><%= child.name %></a>
+                        📁 <button><a href="/folder/<%= child.id %>_<%= child.name.toLowerCase().replace(/\s+/g, '_') %>"><%= child.name %></a></button>
                     </div>
                 <% }) %>
             <% } %>
