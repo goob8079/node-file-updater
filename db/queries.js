@@ -32,23 +32,41 @@ async function getUserById(id) {
 }
 
 // folder functions
-async function createFolder(userId, parentFolderId, folderName) {
+async function createFolder(userId, parentFolderId = null, folderName) {
     const folder = await prisma.folder.create({
         data: {
             ownerId: userId,
-            parentFolderId: parentFolderId,
+            parentId: Number(parentFolderId),
             name: folderName
         }
     });
     return folder;
 }
 
-async function deleteFolder(folderId) {
-    return await prisma.folder.delete({
+async function deleteFolder(folderId, userId) {
+    const folder = await prisma.folder.findFirst({
         where: {
-            id: folderId
+            id: Number(folderId),
+            ownerId: userId
         }
     });
+
+    if (!folder) {
+        throw new Error('Folder not found');
+    }
+
+    // root folder protection
+    if (folder.parentId === null) {
+        throw new Error('Root folder cannot be deleted');
+    }
+
+    const deletion = await prisma.folder.delete({
+        where: {
+            id: Number(folderId),
+            ownerId: userId
+        }
+    });
+    return deletion;
 }
 
 async function renameFolder(folderId, userId, newName) {

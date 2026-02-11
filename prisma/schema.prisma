@@ -28,9 +28,9 @@ model File {
   name     String
   size     Int
   created  DateTime @default(now())
+  url      String
   ownerId  Int
   folderId Int
-  url      String
   folder   Folder   @relation(fields: [folderId], references: [id], onDelete: Cascade)
   owner    User     @relation(fields: [ownerId], references: [id])
 
@@ -57,5 +57,5 @@ model ShareLink {
   folderId Int
   created  DateTime @default(now())
   expires  DateTime
-  folder   Folder   @relation(fields: [folderId], references: [id])
+  folder   Folder   @relation(fields: [folderId], references: [id], onDelete: Cascade)
 }

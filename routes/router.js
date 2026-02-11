@@ -29,10 +29,15 @@ router.get('/uploadFile', fileController.uploadFileGet);
 router.post('/uploadFile', upload.single('uploaded-file'), fileController.uploadFilePost);
 
 // folder logic
-router.get('/folder/:id', folderController.viewFolderGet);
-router.post('/folder/:id/rename',
+router.get('/folder/:slug', folderController.viewFolderGet);
+router.post('/folder/:slug/create', 
     folderController.validateFolderName,
+    folderController.createFolderPost
+);
+router.post('/folder/:slug/rename',
+    folderController.validateFolderRename,
     folderController.renameFolderPost
 );
+router.post('/folder/:slug/delete', folderController.deleteFolderPost);
 
 module.exports = router;
