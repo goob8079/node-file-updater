@@ -4,27 +4,33 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Homepage</title>
+        <link rel="stylesheet" href="../css/index.css">
     </head>
     <body>
-        <h1>File uploader</h1>
+        <h1 id="title">File uploader</h1>
         <% if (loggedIn) { %>
-            <p>Hello <%= user %>! <a href="/logout">Logout</a></p><br>
-            <div class="folders-container">
-                <h3>Folders</h3>
-                <% if (folders.length === 0) { %>
-                    <p>No folders found</p>
-                <% } else { %>
-                    <% folders.forEach(f => { %>
-                        <button><a href="/folder/<%= f.id %>_<%= f.name.toLowerCase().replace(/\s+/g, '_') %>" style="text-decoration: none; color: black;">📁 <%= f.name %></a></button>
-                    <% }) %>
-                <% } %>
+            <div class="logged-in">
+                <p id="greeting">Hello <%= user %>! <a href="/logout">Logout</a></p><br>
+                <hr />
+                <div class="folders-container">
+                    <h3>Folders</h3>
+                    <% if (folders.length === 0) { %>
+                        <p>No folders found</p>
+                    <% } else { %>
+                        <% folders.forEach(f => { %>
+                            <a href="/folder/<%= f.id %>_<%= f.name.toLowerCase().replace(/\s+/g, '_') %>" style="text-decoration: none; color: black;"><button>📁 <%= f.name %></button></a>
+                        <% }) %>
+                    <% } %>
+                </div>
             </div>
         <% } else { %>
-            <h2>Please log in or create an account</h2>
-            <nav class="links">
-                <a href="/signup">Sign up</a><br>
-                <a href="/login">Login</a>
-            </nav>
+            <div class="not-logged-in">
+                <h2>Please log in or create an account</h2>
+                <nav class="links">
+                    <a href="/signup">Sign up</a><br>
+                    <a href="/login">Login</a>
+                </nav>
+            </div>
         <% } %>
     </body>
 </html>
