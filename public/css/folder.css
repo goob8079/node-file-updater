@@ -14,3 +14,7 @@
 .active { 
     display: block;
 }
+
+button:hover {
+    cursor: pointer;
+} 
