@@ -2,11 +2,11 @@ const { validationResult, body } = require("express-validator");
 const db = require("../db/queries");
 
 const validateFolderName = body('newFolderName').trim()
-    .matches(/^[a-zA-Z0-9_]+$/).withMessage('Folder must contain only letters and numbers!')
+    .matches(/^[a-zA-Z0-9_-]+$/).withMessage('Folder must contain only letters, numbers, underscores, and dashes (-)!')
     .isLength({ min: 1, max: 45 }).withMessage('Folder must be between 1 and 45 characters long!');
 
 const validateFolderRename = body('renameFolder').trim()
-    .matches(/^[a-zA-Z0-9_]+$/).withMessage('Folder must contain only letters and numbers!')
+    .matches(/^[a-zA-Z0-9_-]+$/).withMessage('Folder must contain only letters, numbers, underscores, and dashes (-)!')
     .isLength({ min: 1, max: 45 }).withMessage('Folder must be between 1 and 45 characters long!');
 
 async function viewFolderGet(req, res) {
@@ -49,7 +49,7 @@ async function createFolderPost(req, res) {
     // save formData into session to maintain errors and popup status (activePopup)
     if (!errs.isEmpty()) {
         req.session.formData = {
-            activePopup: 'create',
+            activePopup: 'createFolder',
             formErrors: errs.array(),
             formOld: req.body
         };
@@ -72,7 +72,7 @@ async function renameFolderPost(req, res) {
 
     if (!errs.isEmpty()) {
         req.session.formData = {
-            activePopup: 'create',
+            activePopup: 'renameFolder',
             formErrors: errs.array(),
             formOld: req.body
         };

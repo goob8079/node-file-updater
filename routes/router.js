@@ -25,8 +25,11 @@ router.post('/login', passport.authenticate('local', {
 router.get('/logout', accountController.logoutGet);
 
 // file logic
-router.get('/uploadFile', fileController.uploadFileGet);
-router.post('/uploadFile', upload.single('uploaded-file'), fileController.uploadFilePost);
+router.post('/folder/:slug/upload-file', 
+    upload.single('uploaded-file'), 
+    fileController.validateFileName,
+    fileController.uploadFilePost
+);
 
 // folder logic
 router.get('/folder/:slug', folderController.viewFolderGet);

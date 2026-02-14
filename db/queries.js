@@ -150,10 +150,11 @@ async function createFile(userId, folderId, fileName, size, url) {
     return file; 
 }
 
-async function getFileById(fileId) {
+async function getFileById(fileId, userId) {
     const file = await prisma.file.findFirst({
         where: {
-            id: fileId            
+            id: fileId,
+            ownerId: userId
         }
     });
 

@@ -22,3 +22,10 @@ function closeNewFolderPopup() {
     document.querySelector(".new-folder-popup").style.display = "none";
 }
 
+function openUploadFilePopup() {
+    document.querySelector(".upload-popup").style.display = "block";
+}
+
+function closeUploadFilePopup() {
+    document.querySelector(".upload-popup").style.display = "none";
+}
