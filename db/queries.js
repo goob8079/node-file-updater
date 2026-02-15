@@ -136,7 +136,7 @@ async function createSharedLink(folderId, expiresAt) {
 }
 
 // file functions
-async function createFile(userId, folderId, fileName, size, url) {
+async function createFile(userId, folderId, fileName, size, url, publicId) {
     const file = await prisma.file.create({
         data: {
             name: fileName,            
@@ -144,6 +144,7 @@ async function createFile(userId, folderId, fileName, size, url) {
             folderId: folderId,
             size: size,
             url: url,
+            publicId: publicId
         }
     });
 
@@ -153,7 +154,7 @@ async function createFile(userId, folderId, fileName, size, url) {
 async function getFileById(fileId, userId) {
     const file = await prisma.file.findFirst({
         where: {
-            id: fileId,
+            id: Number(fileId),
             ownerId: userId
         }
     });
@@ -161,15 +162,22 @@ async function getFileById(fileId, userId) {
     return file;
 }
 
-async function renameFile(fileId, fileName) {
+async function renameFile(fileId, userId, newName, url, publicId) {
     const file = await prisma.file.update({
         where: {
-            id: fileId,
+            id: Number(fileId),
+            ownerId: userId
         },
         data: {
-            name: fileName,
+            name: newName,
+            url: url,
+            publicId: publicId
         },
     });
+
+    if (file.count === 0) {
+        throw new Error('File not found!');
+    }
 
     return file; 
 }

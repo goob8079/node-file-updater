@@ -1,4 +1,6 @@
-.rename-popup, .delete-popup, .new-folder-popup, .upload-popup {
+.rename-popup, .delete-popup, 
+.new-folder-popup, .upload-popup,
+.rename-file-popup {
     display: none;
     position: fixed;
     top: 50%;

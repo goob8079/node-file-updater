@@ -10,17 +10,12 @@ const validateFileName = body('uploadFile').trim()
     .isLength({ min: 1, max: 45 }).withMessage('Folder must be between 1 and 45 characters long!');
 
 const validateFileRename = body('renameFile').trim()
-    .matches(/^[a-zA-Z0-9_-]+$/).withMessage('File must contain only letters, numbers, underscores, and dashes (-)!')
-    .isLength({ min: 1, max: 45 }).withMessage('Folder must be between 1 and 45 characters long!');
+    .matches(/^[a-zA-Z0-9_-]+$/).withMessage('New name must contain only letters, numbers, underscores, and dashes (-)!')
+    .isLength({ min: 1, max: 45 }).withMessage('New name must be between 1 and 45 characters long!');
 
 async function uploadFilePost(req, res) {
     const errs = validationResult(req);
-    const loggedIn = req.isAuthenticated();
     const slug = req.params.slug;
-
-    if (!loggedIn) {
-        return res.status(403).send('<h1>You do not have access to this link</h1><a href="/">Back to Home</a>');
-    }
 
     if (!errs.isEmpty()) {
         req.session.formData = {
@@ -93,7 +88,7 @@ async function uploadFilePost(req, res) {
         const fileExt = path.extname(req.file.originalname);
         const finalName = `${req.body.uploadFile}${fileExt}`;
 
-        await db.createFile(req.user.id, folder.id, finalName, req.file.size, uploadResult.secure_url);
+        await db.createFile(req.user.id, folder.id, finalName, req.file.size, uploadResult.secure_url, uploadResult.public_id);
 
         res.redirect(`/folder/${slug}`);
     } catch (err) {
@@ -110,8 +105,60 @@ async function uploadFilePost(req, res) {
     }
 }
 
+async function renameFilePost(req, res) {
+    const errs = validationResult(req);
+    const slug = req.params.slug;
+    const userId = req.user.id;
+    
+    if (!errs.isEmpty()) {
+        req.session.formData = {
+            activePopup: 'renameFile',
+            formErrors: errs.array(),
+            formOld: req.body
+        }
+        
+        return req.session.save(() => {
+            res.redirect(`/folder/${slug}`);
+        });
+    }
+
+    try {
+        const file = await db.getFileById(req.body.fileId, userId);
+
+        if (!file) {
+            return res.redirect(`/folder/${slug}`);
+        }
+
+        const fileExt = path.extname(file.name);
+        const finalName = `${req.body.renameFile}${fileExt}`;
+        const newPublicId = `user_${userId}/${req.body.renameFile}`;
+
+        const result = await cloudinary.uploader.rename(file.publicId, newPublicId);
+
+        await db.renameFile(file.id, userId, finalName, result.secure_url, newPublicId);
+        res.redirect(`/folder/${slug}`);
+    } catch (err) {
+        // handle duplicate name error
+        if (err.code === 'P2002') {
+            req.session.formData = {
+                activePopup: 'renameFile',
+                formErrors: [{ msg: 'File with that name already exists! '}],
+                formOld: req.body
+            }
+
+            return req.session.save(() => {
+                res.redirect(`/folder/${slug}`);
+            });    
+        }
+        
+        console.log(err);
+        res.redirect(`/folder/${slug}`);
+    }
+}
+
 module.exports = {
     uploadFilePost,
+    renameFilePost,
     validateFileName,
     validateFileRename,
 }

@@ -29,6 +29,7 @@ model File {
   size     Int
   created  DateTime @default(now())
   url      String
+  publicId String
   ownerId  Int
   folderId Int
   folder   Folder   @relation(fields: [folderId], references: [id], onDelete: Cascade)

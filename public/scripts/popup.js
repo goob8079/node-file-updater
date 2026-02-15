@@ -29,3 +29,11 @@ function openUploadFilePopup() {
 function closeUploadFilePopup() {
     document.querySelector(".upload-popup").style.display = "none";
 }
+
+function openRenameFilePopup() {
+    document.querySelector(".rename-file-popup").style.display = "block";
+}
+
+function closeRenameFilePopup() {
+    document.querySelector(".rename-file-popup").style.display = "none";
+}

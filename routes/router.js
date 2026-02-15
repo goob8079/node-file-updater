@@ -30,6 +30,10 @@ router.post('/folder/:slug/upload-file',
     fileController.validateFileName,
     fileController.uploadFilePost
 );
+router.post('/folder/:slug/rename-file',
+    fileController.validateFileRename,
+    fileController.renameFilePost
+)
 
 // folder logic
 router.get('/folder/:slug', folderController.viewFolderGet);

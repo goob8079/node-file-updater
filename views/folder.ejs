@@ -116,6 +116,25 @@
                         📄 <%= file.name %>
                         (<%= Math.round(file.size/1024) %> KB)
                         <a href="<%= file.url %>" target="_blank"><button>View file</button></a>
+                        <button class="rename-file-btn" onclick="openRenameFilePopup(this)">Rename</button>
+                        <div class="rename-file-popup <%= activePopup === 'renameFile' ? 'active': '' %>"> <!-- to keep popup open if set to true -->
+                            <button class="close-popup" onclick="closeRenameFilePopup(this)">X</button>
+                            <form action="/folder/<%= f.id %>_<% f.name.toLowerCase().replace(/\s+/g, '_') %>/rename-file" method="POST">
+                                <label for="renameFile">File name:</label>
+                                <input type="hidden" name="fileId" value="<%= file.id %>">
+                                <input type="text" id="renameFile" name="renameFile" value="<%= formOld?.['renameFile'] || '' %>" required><br>
+                                <div class="error">
+                                    <% if (activePopup === 'renameFile' && formErrors.length) { %>
+                                        <ul>
+                                            <% formErrors.forEach(e => { %>
+                                                <li style="color: red;"><%= e.msg %></li>
+                                            <% }) %>
+                                        </ul>
+                                    <% } %>
+                                </div>
+                                <button type="submit">Rename file</button>
+                            </form>
+                        </div>
                     </div>
                 <% }) %>
             <% } %>
