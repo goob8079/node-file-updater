@@ -123,8 +123,7 @@ async function renameFilePost(req, res) {
     }
 
     try {
-        const file = await db.getFileById(req.body.fileId, userId);
-
+        const file = await db.getFileById(req.body.fileIdRename, userId);
         if (!file) {
             return res.redirect(`/folder/${slug}`);
         }
@@ -156,9 +155,34 @@ async function renameFilePost(req, res) {
     }
 }
 
+async function deleteFilePost(req, res) {
+    const slug = req.params.slug;
+    const userId = req.user.id;
+
+    try {
+        const file = await db.getFileById(req.body.fileIdDelete, userId);
+        if (!file) {
+            return res.redirect(`/folder/${slug}`);
+        }
+        
+        if (req.body.deleteAction === 'noDeleteFile') {
+            return res.redirect(`/folder/${slug}`);
+        }
+
+        await cloudinary.uploader.destroy(file.publicId);
+
+        await db.deleteFile(file.id, userId);
+        res.redirect(`/folder/${slug}`);
+    } catch (err) {
+        console.log(err);
+        res.redirect(`/folder/${slug}`);
+    }
+}
+
 module.exports = {
     uploadFilePost,
     renameFilePost,
+    deleteFilePost,
     validateFileName,
     validateFileRename,
 }

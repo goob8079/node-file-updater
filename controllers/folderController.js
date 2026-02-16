@@ -92,7 +92,7 @@ async function deleteFolderPost(req, res) {
     const folderId = slug.split('_')[0];
     const userId = req.user.id;
  
-    if (req.body.noDelete) {
+    if (req.body.deleteAction === 'noDeleteFolder') {
         return res.redirect(`/folder/${slug}`);
     }
 

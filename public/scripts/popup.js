@@ -37,3 +37,11 @@ function openRenameFilePopup() {
 function closeRenameFilePopup() {
     document.querySelector(".rename-file-popup").style.display = "none";
 }
+
+function openDeleteFilePopup() {
+    document.querySelector(".delete-file-popup").style.display = "block";
+}
+
+function closeDeleteFilePopup() {
+    document.querySelector(".delete-file-popup").style.display = "none";
+}

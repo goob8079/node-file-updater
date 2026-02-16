@@ -182,10 +182,11 @@ async function renameFile(fileId, userId, newName, url, publicId) {
     return file; 
 }
 
-async function deleteFile(fileId) {
+async function deleteFile(fileId, userId) {
     return await prisma.file.delete({
         where: {
-            id: fileId,
+            id: Number(fileId),
+            ownerId: userId
         }       
     }); 
 }

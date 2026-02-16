@@ -37,8 +37,8 @@
                     <button class="close-popup" onclick="closeDeletePopup(this)">X</button>
                     <form action="/folder/<%= f.id %>/delete" method="POST">
                         <p>Are you sure you want to delete this folder and all folders/files within it?</p>
-                        <button name="yesDelete" type="submit">Yes</button>
-                        <button name="noDelete" type="submit">No</button>
+                        <button name="deleteAction" value="deleteFolder" type="submit">Yes</button>
+                        <button name="deleteAction" value="noDeleteFolder" type="submit">No</button>
                     </form>
                 </div>
             <% } %>
@@ -91,7 +91,7 @@
             <button class="upload-btn" onclick="openUploadFilePopup(this)">Upload file</button>
             <div class="upload-popup <%= activePopup === 'uploadFile' ? 'active': '' %>"> <!-- to keep popup open if set to true -->
                 <button class="close-popup" onclick="closeUploadFilePopup(this)">X</button>
-                <form action="/folder/<%= f.id %>_<% f.name.toLowerCase().replace(/\s+/g, '_') %>/upload-file" method="POST" enctype="multipart/form-data">
+                <form action="/folder/<%= f.id %>_<%= f.name.toLowerCase().replace(/\s+/g, '_') %>/upload-file" method="POST" enctype="multipart/form-data">
                     <label for="uploadFile">File name:</label>
                     <input type="text" id="uploadFile" name="uploadFile" value="<%= formOld?.['uploadFile'] || '' %>" required><br>
                     <input type="file" name="uploaded-file"><br>
@@ -119,9 +119,9 @@
                         <button class="rename-file-btn" onclick="openRenameFilePopup(this)">Rename</button>
                         <div class="rename-file-popup <%= activePopup === 'renameFile' ? 'active': '' %>"> <!-- to keep popup open if set to true -->
                             <button class="close-popup" onclick="closeRenameFilePopup(this)">X</button>
-                            <form action="/folder/<%= f.id %>_<% f.name.toLowerCase().replace(/\s+/g, '_') %>/rename-file" method="POST">
+                            <form action="/folder/<%= f.id %>_<%= f.name.toLowerCase().replace(/\s+/g, '_') %>/rename-file" method="POST">
                                 <label for="renameFile">File name:</label>
-                                <input type="hidden" name="fileId" value="<%= file.id %>">
+                                <input type="hidden" name="fileIdRename" value="<%= file.id %>">
                                 <input type="text" id="renameFile" name="renameFile" value="<%= formOld?.['renameFile'] || '' %>" required><br>
                                 <div class="error">
                                     <% if (activePopup === 'renameFile' && formErrors.length) { %>
@@ -133,6 +133,16 @@
                                     <% } %>
                                 </div>
                                 <button type="submit">Rename file</button>
+                            </form>
+                        </div>
+                        <button class="delete-file-btn" onclick="openDeleteFilePopup(this)">Delete</button>
+                        <div class="delete-file-popup">
+                            <button class="close-popup" onclick="closeDeleteFilePopup(this)">X</button>
+                            <form action="/folder/<%= f.id %>_<%= f.name.toLowerCase().replace(/\s+/g, '_') %>/delete-file" method="POST">
+                                <p>Are you sure you want to delete this file?</p>
+                                <input type="hidden" name="fileIdDelete" value="<%= file.id %>">
+                                <button name="deleteAction" value="deleteFile" type="submit">Yes</button>
+                                <button name="deleteAction" value="noDeleteFile" type="submit">No</button>
                             </form>
                         </div>
                     </div>

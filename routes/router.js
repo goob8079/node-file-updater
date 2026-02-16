@@ -33,7 +33,8 @@ router.post('/folder/:slug/upload-file',
 router.post('/folder/:slug/rename-file',
     fileController.validateFileRename,
     fileController.renameFilePost
-)
+);
+router.post('/folder/:slug/delete-file', fileController.deleteFilePost);
 
 // folder logic
 router.get('/folder/:slug', folderController.viewFolderGet);
