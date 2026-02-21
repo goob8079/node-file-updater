@@ -4,6 +4,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Sign up</title>
+        <link rel="stylesheet" href="../css/signup.css">
     </head>
     <body>
         <%
@@ -13,21 +14,21 @@
             }
         %>
         <h1>Create an account</h1>
-        <a href="/">Back to homepage</a>
+        <a href="/">← Back to homepage</a>
         <form action="/signup" method="POST">
-            <label for="username">Username:</label>
+            <label for="username">Username</label>
             <input type="text" id="username" name="username" value="<%= old?.['username'] || '' %>">
             <% fieldErrors('username').forEach(e => { %>
                 <div class="field-error" style="color: red;"><%= e.msg %></div>
             <% }) %><br>
 
-            <label for="password">Password:</label>
+            <label for="password">Password</label>
             <input type="password" id="password" name="password">
             <% fieldErrors('password').forEach(e => { %>
                 <div class="field-error" style="color: red;"><%= e.msg %></div>
             <% }) %><br>
 
-            <label for="confirmPass">Confirm Password:</label>
+            <label for="confirmPass">Confirm Password</label>
             <input type="password" id="confirmPass" name="confirmPass">
             <% fieldErrors('confirmPass').forEach(e => { %>
                 <div class="field-error" style="color: red;"><%= e.msg %></div>

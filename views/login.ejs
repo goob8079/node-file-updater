@@ -4,22 +4,23 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Login</title>
+        <link rel="stylesheet" href="../css/login.css">
     </head>
     <body>
         <h1>Login to your account</h1>
-        <a href="/">Homepage</a>
+        <a href="/">← Homepage</a>
         <% if (authErrors && authErrors.length > 0) { %>
             <% authErrors.forEach(msg => { %>
                 <p style="color: red;"><%= msg %></p>
             <% }) %>
         <% } %>
         <form action="/login" method="POST">
-            <label for="username">Username:</label>
+            <label for="username">Username</label>
             <input type="text" id="username" name="username" value="<%= old?.['username'] || '' %>" required>
-
-            <label for="password">Password:</label>
+            <br>
+            <label for="password">Password</label>
             <input type="password" id="password" name="password" required>
-
+            <br>
             <button type="submit">Login</button>
     </body>
 </html>
