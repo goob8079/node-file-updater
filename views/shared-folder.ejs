@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+    </head>
+    <body>
+        <div class="shared-container">
+
+        <h1><%= folder.name %></h1>
+        <p class="shared-label">Shared Folder</p>
+
+        <% if (expires) { %>
+            <p class="expiration">
+                Expires on: <%= expires.toDateString() %>
+            </p>
+        <% } %>
+
+        <hr>
+
+        <% if (files.length === 0) { %>
+            <p>No files in this folder.</p>
+        <% } %>
+
+        <ul class="file-list">
+            <% files.forEach(file => { %>
+                <li class="file-item">
+                    <div class="file-name">
+                        <%= file.name %>
+                    </div>
+
+                    <a href="/files/<%= file.id %>/download">
+                        Download
+                    </a>
+                </li>
+            <% }) %>
+        </ul>
+
+    </div>
+    </body>
+</html>

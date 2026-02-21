@@ -6,6 +6,7 @@
         <title><%= f.name %></title>
         <link rel="stylesheet" href="../css/folder.css">
         <script src="../scripts/popup.js"></script>
+        <script src="../scripts/utils.js"></script>
     </head>
     <body>
         <h1><strong><%= f.name %></strong></h1>
@@ -45,6 +46,17 @@
         </nav>
         <div class="folder-container">
             <h1>📂 <%= f.name %></h1>
+            <form action="/folder/<%= f.id %>_<%= f.name.toLowerCase().replace(/\s+/g, '_') %>/share" method="POST">
+                <button type="submit">Share Folder</button>
+            </form>
+            <div class="share-folder-popup <%= activePopup === 'shareLink' ? 'active' : '' %>">
+                <button class="close-popup" onclick="closeSharePopup(this)">X</button>
+                <h3>Share Link</h3>
+                <% if (shareLink) { %>
+                    <input type="text" id="shareLinkInput" value="<%= shareLink %>" readonly>
+                    <button type="button" onclick="copyShareLink()">Copy</button>
+                <% } %>
+            </div>
 
             <% if (f.parentFolder) { %>
                 <a href="/folder/<%= f.parentFolder.id %>">← Back</a>

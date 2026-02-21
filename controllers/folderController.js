@@ -35,7 +35,8 @@ async function viewFolderGet(req, res) {
         f: folder,
         formErrors: formData.formErrors || [],
         formOld: formData.formOld || '',
-        activePopup: formData.activePopup || null
+        activePopup: formData.activePopup || null,
+        shareLink: formData.shareLink
     });
 }
 
@@ -101,11 +102,63 @@ async function deleteFolderPost(req, res) {
     res.redirect('/');
 }
 
+async function sharedFolderGet(req, res) {
+    const { id } = req.params;
+
+    const shareLink = await db.getSharedLink(id)
+
+    if (!shareLink) {
+        return res.status(404).render('404');
+    }
+
+    // Expiration check
+    if (shareLink.expires < new Date()) {
+        return res.status(403).send("This link has expired.");
+    }
+
+    res.render('shared-folder', {
+        folder: shareLink.folder,
+        files: shareLink.folder.files,
+        expires: shareLink.expires
+    });
+}
+
+async function sharedFolderPost(req, res) {
+    const slug = req.params.slug;
+    const userId = req.user.id;
+
+    try {
+        const folderId = slug.split('_')[0];
+
+        const folder = await db.getFolder(userId, folderId);
+        if (!folder) {
+            return res.redirect('/');
+        }
+
+        const shareLink = await db.createSharedLink(folderId, userId);
+        console.log(shareLink);
+        
+        req.session.formData = {
+            activePopup: 'shareLink',
+            shareLink: shareLink
+        }
+
+        return req.session.save(() => {
+            res.redirect(`/folder/${slug}`);
+        });
+    } catch (err) {
+        console.error(err);
+        res.redirect(`/folder/${slug}`);
+    }
+}
+
 module.exports = {
     viewFolderGet,
     createFolderPost,
     renameFolderPost,
     deleteFolderPost,
+    sharedFolderGet,
+    sharedFolderPost,
     validateFolderName,
     validateFolderRename,
 }

@@ -47,5 +47,7 @@ router.post('/folder/:slug/rename',
     folderController.renameFolderPost
 );
 router.post('/folder/:slug/delete', folderController.deleteFolderPost);
+router.get('/folder/shared/:id', folderController.sharedFolderGet)
+router.post('/folder/:slug/share', folderController.sharedFolderPost);
 
 module.exports = router;

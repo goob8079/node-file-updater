@@ -1,5 +1,6 @@
 const bcrypt = require("bcryptjs");
 const prisma = require("../lib/prisma");
+const crypto = require("crypto");
 
 // user functions
 async function createUser(username, password, prismaClient = prisma) {
@@ -124,15 +125,24 @@ async function getAllFolders(userId) {
     return folders;
 }
 
-async function createSharedLink(folderId, expiresAt) {
-    const sharedLink = await prisma.shareLink.create({
+async function createSharedLink(folderId, userId) {
+    const folder = await getFolder(userId, folderId);
+
+    if (!folder) {
+        throw new Error("Folder not found");
+    }
+
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 7); // expires within 7 days of creation
+
+    const shareLink = await prisma.shareLink.create({
         data: {
-            folderId: folderId,
+            folderId: folder.id,
             expires: expiresAt
         }
     });
 
-    return sharedLink;  
+    return `/shared/${shareLink.id}`;
 }
 
 // file functions
@@ -194,10 +204,15 @@ async function deleteFile(fileId, userId) {
 // share link function
 async function getSharedLink(id) {
     const link = await prisma.shareLink.findUnique({
-        where: { 
-            id,
-            expires: new Date() 
-         }      
+        where: { id },
+        include: {
+            folder: {
+                include: {
+                    files: true,
+                    children: true
+                }
+            }
+        }      
     });
 
     return link;

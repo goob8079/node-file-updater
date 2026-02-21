@@ -45,3 +45,11 @@ function openDeleteFilePopup() {
 function closeDeleteFilePopup() {
     document.querySelector(".delete-file-popup").style.display = "none";
 }
+
+function openSharePopup() {
+    document.querySelector(".share-folder-popup").style.display = "block";
+}
+
+function closeSharePopup() {
+    document.querySelector(".share-folder-popup").style.display = "none";
+}
